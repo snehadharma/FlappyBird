@@ -28,11 +28,19 @@ class Population:
         print("calc fitness")
         self.calculate_fitness()
 
+        print("kill extinct")
+        self.kill_extinct()
+
+        print("kill stale")
+        self.kill_stale()
+
         print("sort by fitness") 
         self.sort_species_by_fitness()
 
         print("children for next gen")
         self.next_gen()
+
+        
 
     def speciate(self):
         for s in self.species:
@@ -56,6 +64,30 @@ class Population:
 
         for s in self.species:
             s.calculate_average_fitness()
+
+    def kill_extinct(self):
+        species_bin = []
+        for s in self.species:
+            if len(s.players) == 0:
+                species_bin.append(s)
+        for s in species_bin:
+            self.species.remove(s)
+
+    def kill_stale(self):
+        player_bin = []
+        species_bin = []
+        for s in self.species:
+            if s.staleness >= 8:
+                if len(self.species) > len(species_bin) + 1:
+                    species_bin.append(s)
+                    for p in s.players:
+                        player_bin.append(p)
+                else:
+                    s.staleness = 0
+        for p in player_bin:
+            self.players.remove(p)
+        for s in species_bin:
+            self.species.remove(s)
 
     def sort_species_by_fitness(self):
         for s in self.species:
